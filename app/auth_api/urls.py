@@ -7,12 +7,14 @@ from .views import (
     NoteDeleteView,
     RetrieveUserView,
     CustomLogoutView,
+    GoogleLoginView,
 )
 
 
 urlpatterns = [
     path("create/", CreateUserView.as_view(), name="create_user"),
     path("login/", CustomObtainTokenView.as_view(), name="login"),
+    path("login/google/", GoogleLoginView.as_view(), name="google_login"),
     path("refresh/", CustomRefreshTokenView.as_view(), name="refresh"),
     path("api/note/", NoteListCreateView.as_view(), name="list_create_note"),
     path("api/note/delete/<int:pk>/", NoteDeleteView.as_view(), name="delete_note"),

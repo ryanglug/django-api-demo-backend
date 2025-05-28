@@ -16,6 +16,11 @@ from rest_framework.views import APIView
 from .serializers import NoteSerializer
 from api.models import Note
 
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests
+
+from django.conf import settings
+
 
 # Create your views here.
 class NoteListCreateView(generics.ListCreateAPIView):
@@ -90,6 +95,45 @@ class CustomRefreshTokenView(TokenRefreshView):
         serializer.is_valid(raise_exception=True)
 
         return Response(serializer.validated_data)
+
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        id_token = request.data.get("id_token")
+        if not id_token:
+            return Response({"error": "No id token supplied"}, status=400)
+
+        print(settings.GOOGLE_CLIENT_ID)
+
+        # Verify token
+        userInfo = google_id_token.verify_oauth2_token(
+            id_token, requests.Request(), settings.GOOGLE_CLIENT_ID
+        )
+
+        email = userInfo["email"]
+        # Create or get the user
+        user, created = User.objects.get_or_create(
+            email=email, defaults={"username": email.split("@")[0]}
+        )
+
+        # Create tokens
+        refresh_token = RefreshToken.for_user(user)
+        access_token = str(refresh_token.access_token)
+
+        response = Response({"access": access_token}, status=200)
+
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh_token),
+            httponly=True,
+            secure=False,
+            samesite="Strict",
+            max_age=24 * 60 * 60,
+        )
+
+        return response
 
 
 class CustomLogoutView(APIView):
