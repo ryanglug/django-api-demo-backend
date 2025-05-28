@@ -47,7 +47,16 @@ REST_FRAMEWORK = {
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
+    "graphql_jwt.backends.JSONWebTokenBackend",
 )
+
+GRAPHENE = {
+    "schema": "graphql_api.schema",
+    "MIDDLEWARE": [
+        # "graphql_jwt.middleware.JSONWebTokenMiddleware",
+        "app.middleware.SimpleJWTMiddleware",
+    ],
+}
 
 
 # Application definition
@@ -63,6 +72,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "rest_framework.authtoken",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphene_django",
     "allauth",
     "allauth.account",

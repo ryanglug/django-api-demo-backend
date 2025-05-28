@@ -105,8 +105,6 @@ class GoogleLoginView(APIView):
         if not id_token:
             return Response({"error": "No id token supplied"}, status=400)
 
-        print(settings.GOOGLE_CLIENT_ID)
-
         # Verify token
         userInfo = google_id_token.verify_oauth2_token(
             id_token, requests.Request(), settings.GOOGLE_CLIENT_ID
