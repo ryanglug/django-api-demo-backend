@@ -4,7 +4,6 @@ from api.models import Note
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from graphql_jwt.decorators import login_required
-import graphql_jwt
 
 
 class UserType(DjangoObjectType):
@@ -18,30 +17,74 @@ class NoteType(DjangoObjectType):
         model = Note
 
 
+class NoteConnection(graphene.ObjectType):
+    notes = graphene.List(NoteType)
+    has_next = graphene.Boolean()
+
+
 class Query(graphene.ObjectType):
-    notes = graphene.List(NoteType, page=graphene.Int(), per_page=graphene.Int())
-    user_notes = graphene.List(NoteType, page=graphene.Int(), per_page=graphene.Int())
+    notes = graphene.Field(NoteConnection, page=graphene.Int(), per_page=graphene.Int())
+    user_notes = graphene.Field(
+        NoteConnection, page=graphene.Int(), per_page=graphene.Int()
+    )
 
-    def resolve_notes(self, info, page=1, per_page=5):
+    def resolve_notes(self, info, page=1, per_page=10):
         paginator = Paginator(Note.objects.all(), per_page)
+        current_page = paginator.get_page(page)
 
-        return paginator.page(page).object_list
+        return NoteConnection(
+            notes=current_page.object_list, has_next=current_page.has_next()
+        )
 
     @login_required
-    def resolve_user_notes(self, info, page=1, per_page=5):
+    def resolve_user_notes(self, info, page=1, per_page=10):
         user = info.context.user
-        print("user", user)
         notes = Note.objects.filter(author=user)
 
         paginator = Paginator(notes, per_page)
-        return paginator.page(page).object_list
+        current_page = paginator.get_page(page)
+        return NoteConnection(
+            notes=current_page.object_list, has_next=current_page.has_next()
+        )
+
+
+class CreateNoteMutation(graphene.Mutation):
+    class Arguments:
+        title = graphene.String(required=True)
+        content = graphene.String(required=True)
+
+    note = graphene.Field(NoteType)
+
+    @login_required
+    def mutate(self, info, title, content):
+        user = info.context.user
+        note = Note.objects.create(title=title, content=content, author=user)
+
+        return CreateNoteMutation(note=note)  # type: ignore
+
+
+class DeleteNoteMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+
+    @login_required
+    def mutate(self, info, id):
+        try:
+            note = Note.objects.get(id=id)
+
+            note.delete()
+
+            return DeleteNoteMutation(success=True)  # type: ignore
+
+        except Note.DoesNotExist:
+            raise Exception("Note not found")
 
 
 class Mutation(graphene.ObjectType):
-    # Add JWT authentication mutations
-    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
-    verify_token = graphql_jwt.Verify.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
+    create_note = CreateNoteMutation.Field()
+    delete_note = DeleteNoteMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
