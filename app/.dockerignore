@@ -1,0 +1,34 @@
+# Ignore Python bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+logs/
+*.log
+*.out
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+
+# Ignore SQLite database (if used)
+db.sqlite3
+
+# Ignore environment and secret files
+.env
+*.pem
+*.key
+
+# Ignore static and media files (if using cloud storage/CDN)
+staticfiles/
+media/

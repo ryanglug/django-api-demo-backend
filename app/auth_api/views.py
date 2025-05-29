@@ -20,12 +20,14 @@ from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests
 
 from django.conf import settings
+from api.pagination import CustomPageSizePagination
 
 
 # Create your views here.
 class NoteListCreateView(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageSizePagination
 
     def get_queryset(self):
         notes = Note.objects.filter(author=self.request.user)
