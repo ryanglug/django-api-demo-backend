@@ -74,8 +74,7 @@ class DeleteNoteMutation(graphene.Mutation):
     def mutate(self, info, note_id):
         try:
             user = info.context.user
-            note = Note.objects.filter(author=user).get(pk=note_id)
-
+            note = Note.objects.filter(author=user).get(id=note_id)
             note.delete()
 
             return DeleteNoteMutation(success=True)  # type: ignore

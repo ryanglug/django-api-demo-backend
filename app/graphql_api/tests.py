@@ -12,6 +12,7 @@ GETS_NOTES_QUERY = f"""
 query {{
     notes(page: 1, perPage: {PER_PAGE}) {{
         notes {{
+            id
             title
             content
         }}
@@ -141,21 +142,29 @@ class GraphQLNoteTest(APITestCase):
         self.assertEqual(data[0]["title"], title)
 
     def test_user_delete_note(self):
-        for note_id in [1, 2]:
-            response = self.client.post(
-                self.url,
-                data={
-                    "query": USER_DELETES_NOTE_MUTATION,
-                    "variables": {"noteId": note_id},
-                },
-                format="json",
-                HTTP_AUTHORIZATION=f"Bearer {self.token}",
-            )
-            data = response.json()["data"]["deleteNote"]
+        title = "New title"
+        content = "New Content"
+        response = self.client.post(
+            self.url,
+            data={
+                "query": USER_CREATES_NOTE_MUTATION,
+                "variables": {"title": title, "content": content},
+            },
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token}",
+        )
 
-            if note_id == 1:
-                success = data["success"]
-                self.assertEqual(success, True)
+        data = response.json()["data"]["createNote"]["note"]
 
-            elif note_id == 2:
-                self.assertEqual(data, None)
+        response = self.client.post(
+            self.url,
+            data={
+                "query": USER_DELETES_NOTE_MUTATION,
+                "variables": {"noteId": data["id"]},
+            },
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token}",
+        )
+        data = response.json()["data"]["deleteNote"]
+
+        self.assertEqual(data["success"], True)

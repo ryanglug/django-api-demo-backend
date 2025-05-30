@@ -1,0 +1,7 @@
+services:
+  django-api:
+    image: django-api-demo:1.0.0
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"

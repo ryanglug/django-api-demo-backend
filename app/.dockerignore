@@ -32,3 +32,5 @@ db.sqlite3
 # Ignore static and media files (if using cloud storage/CDN)
 staticfiles/
 media/
+
+docker-compose.yml

@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+DJANGO_ENV = os.getenv("DJANGO_ENV", "development")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -122,10 +124,31 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
+    },
+    "local": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "dj_api_demo",
+        "USER": "postgres",
+        "PASSWORD": "Password123",
+        "HOST": "localhost",
+        "PORT": "5432",
+    },
+    "sqlite": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "NAME": ":memory:",
+    },
 }
+if DJANGO_ENV != "Production":
+    DATABASES["default"] = DATABASES["local"]
+
+if "test" in sys.argv or "test_coverage" in sys.argv:
+    DATABASES["default"] = DATABASES["sqlite"]
 
 
 # Password validation
