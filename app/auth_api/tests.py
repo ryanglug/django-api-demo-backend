@@ -69,13 +69,13 @@ class NoteAuthTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         response = self.client.get(
-            self.url, HTTP_AUTHORIZATION=f"Bearer sdjf98shf9sdhf9s9d8fa9"
+            self.url, HTTP_AUTHORIZATION="Bearer sdjf98shf9sdhf9s9d8fa9"
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         response = self.client.post(
-            self.url, HTTP_AUTHORIZATION=f"Bearer fdysh9a78dsf897sf9s"
+            self.url, HTTP_AUTHORIZATION="Bearer fdysh9a78dsf897sf9s"
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

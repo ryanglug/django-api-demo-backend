@@ -13,11 +13,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY Makefile .
+RUN make deps
 
 COPY . .
 
-RUN python manage.py makemigrations && python manage.py migrate
+RUN make test
+
+RUN make migrate
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
