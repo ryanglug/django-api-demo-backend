@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
+from api.tests import assert_note_data
 
 from api.models import Note
 
@@ -27,11 +28,7 @@ class NoteAuthTestCase(APITestCase):
 
     def test_get_users_notes(self):
         response = self.client.get(self.url, HTTP_AUTHORIZATION=f"Bearer {self.token}")
-        data = response.data["results"][0]
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data["title"], self.note.title)
-        self.assertEqual(data["content"], self.note.content)
-        self.assertEqual(data["author"]["username"], self.user.username)
+        assert_note_data(self, response)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_user_creates_note(self):
@@ -44,16 +41,16 @@ class NoteAuthTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        newResponse = self.client.get(
+        new_response = self.client.get(
             self.url, HTTP_AUTHORIZATION=f"Bearer {self.token}"
         )
 
-        newData = newResponse.data["results"][0]
+        new_data = new_response.data["results"][0]
 
-        self.assertEqual(len(newResponse.data["results"]), 2)
-        self.assertEqual(newData["title"], data["title"])
-        self.assertEqual(newData["content"], data["content"])
-        self.assertEqual(newData["author"]["username"], data["author"]["username"])
+        self.assertEqual(len(new_response.data["results"]), 2)
+        self.assertEqual(new_data["title"], data["title"])
+        self.assertEqual(new_data["content"], data["content"])
+        self.assertEqual(new_data["author"]["username"], data["author"]["username"])
 
     def test_user_inputs_bad_data(self):
         response = self.client.post(

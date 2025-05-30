@@ -93,7 +93,7 @@ class CustomObtainTokenView(TokenObtainPairView):
 class CustomRefreshTokenView(TokenRefreshView):
     serializer_class = TokenRefreshSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
         if not refresh_token:
@@ -114,13 +114,13 @@ class GoogleLoginView(APIView):
             return Response({"error": "No id token supplied"}, status=400)
 
         # Verify token
-        userInfo = google_id_token.verify_oauth2_token(
+        user_info = google_id_token.verify_oauth2_token(
             id_token, requests.Request(), settings.GOOGLE_CLIENT_ID
         )
 
-        email = userInfo["email"]
+        email = user_info["email"]
         # Create or get the user
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             email=email, defaults={"username": email.split("@")[0]}
         )
 
@@ -150,9 +150,8 @@ class CustomLogoutView(APIView):
         try:
             refresh_token = request.COOKIES.get("refresh_token")
 
-        except Exception:
-            print(Exception)
-            pass
+        except Exception as e:
+            print(e)
 
         token = RefreshToken(refresh_token)
         token.blacklist()

@@ -1,4 +1,4 @@
-.PHONY: help deps migrate test
+.PHONY: help deps migrate test lint
 
 help:
 		@echo Makefile Commands
@@ -11,6 +11,9 @@ deps:
 
 migrate:
 		python manage.py makemigrations && python manage.py migrate
+
+lint:
+		flake8 . && pylint .
 
 
 test:

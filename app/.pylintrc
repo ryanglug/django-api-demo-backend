@@ -1,0 +1,5 @@
+[MASTER]
+ignore=__pycache__, migrations, manage.py
+
+[MESSAGES CONTROL]
+disable=missing-docstring, too-few-public-methods, no-member, broad-exception-caught, broad-exception-raised

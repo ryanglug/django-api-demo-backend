@@ -7,7 +7,7 @@ class SimpleJWTMiddleware:
         self.get_response = get_response
         self.jwt_authenticator = JWTAuthentication()
 
-    def resolve(self, next, root, info, **kwargs):
+    def resolve(self, mid_next, root, info, **kwargs):
         request = info.context
 
         def get_user():
@@ -15,9 +15,10 @@ class SimpleJWTMiddleware:
                 user_auth_tuple = self.jwt_authenticator.authenticate(request)
                 if user_auth_tuple is not None:
                     return user_auth_tuple[0]
-            except Exception:
+            except Exception as e:
+                print(e)
                 return None
             return None
 
         request.user = SimpleLazyObject(get_user)
-        return next(root, info, **kwargs)
+        return mid_next(root, info, **kwargs)

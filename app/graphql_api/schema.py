@@ -29,7 +29,7 @@ class Query(graphene.ObjectType):
         NoteConnection, page=graphene.Int(), per_page=graphene.Int()
     )
 
-    def resolve_notes(self, info, page=1, per_page=10):
+    def resolve_notes(self, _, page=1, per_page=10):
         paginator = Paginator(Note.objects.all(), per_page)
         current_page = paginator.get_page(page)
 
@@ -71,16 +71,16 @@ class DeleteNoteMutation(graphene.Mutation):
     success = graphene.Boolean()
 
     @login_required
-    def mutate(self, info, id):
+    def mutate(self, _, note_id):
         try:
-            note = Note.objects.get(id=id)
+            note = Note.objects.get(id=note_id)
 
             note.delete()
 
             return DeleteNoteMutation(success=True)  # type: ignore
 
-        except Note.DoesNotExist:
-            raise Exception("Note not found")
+        except Note.DoesNotExist as exc:
+            raise Exception("Note not found") from exc
 
 
 class Mutation(graphene.ObjectType):

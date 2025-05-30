@@ -6,6 +6,14 @@ from rest_framework.test import APITestCase
 from .models import Note
 
 
+def assert_note_data(self, response):
+    data = response.data["results"][0]
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    self.assertEqual(data["title"], self.note.title)
+    self.assertEqual(data["content"], self.note.content)
+    self.assertEqual(data["author"]["username"], self.user.username)
+
+
 # Create your tests here.
 class NoteApiTestCase(APITestCase):
     def setUp(self) -> None:
@@ -22,11 +30,7 @@ class NoteApiTestCase(APITestCase):
 
     def test_correct_data(self):
         response = self.client.get(self.url)
-        data = response.data["results"][0]
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data["title"], self.note.title)
-        self.assertEqual(data["content"], self.note.content)
-        self.assertEqual(data["author"]["username"], self.user.username)
+        assert_note_data(self, response)
         self.assertEqual(response.data["count"], 10)
 
     def test_pagination(self):
@@ -34,8 +38,8 @@ class NoteApiTestCase(APITestCase):
         data = response.data["results"]
         self.assertEqual(len(data), self.page_size)
         response = self.client.get(self.url, {"page_size": self.page_size, "page": 2})
-        newData = response.data["results"]
-        self.assertNotEqual(data[0]["title"], newData[0]["title"])
+        new_data = response.data["results"]
+        self.assertNotEqual(data[0]["title"], new_data[0]["title"])
 
     def test_only_get_method_allowed(self):
         response = self.client.post(self.url)
