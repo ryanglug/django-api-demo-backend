@@ -66,14 +66,15 @@ class CreateNoteMutation(graphene.Mutation):
 
 class DeleteNoteMutation(graphene.Mutation):
     class Arguments:
-        id = graphene.ID(required=True)
+        note_id = graphene.ID(required=True)
 
     success = graphene.Boolean()
 
     @login_required
-    def mutate(self, _, note_id):
+    def mutate(self, info, note_id):
         try:
-            note = Note.objects.get(id=note_id)
+            user = info.context.user
+            note = Note.objects.filter(author=user).get(pk=note_id)
 
             note.delete()
 

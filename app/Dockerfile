@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.13-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -7,10 +7,9 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache \
+    build-base \
+    libpq-dev
 
 COPY requirements.txt .
 COPY Makefile .
@@ -18,6 +17,7 @@ RUN make deps
 
 COPY . .
 
+RUN make lint
 RUN make test
 
 RUN make migrate
