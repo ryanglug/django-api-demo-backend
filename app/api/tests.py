@@ -1,8 +1,9 @@
-from rest_framework.test import APITestCase
-from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Note
+from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
+
+from .models import Note
 
 
 # Create your tests here.

@@ -1,10 +1,11 @@
 # Create your tests here.
-from rest_framework.test import APITestCase
-from django.urls import reverse
 from django.contrib.auth.models import User
-from api.models import Note
+from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from api.models import Note
 
 
 class NoteAuthTestCase(APITestCase):

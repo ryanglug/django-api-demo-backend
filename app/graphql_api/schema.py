@@ -1,9 +1,10 @@
 import graphene
-from graphene_django import DjangoObjectType
-from api.models import Note
-from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from graphene_django import DjangoObjectType
 from graphql_jwt.decorators import login_required
+
+from api.models import Note
 
 
 class UserType(DjangoObjectType):

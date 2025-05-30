@@ -16,9 +16,10 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import path, include
 from graphene_django.views import GraphQLView
+
 from graphql_api.schema import schema
 
 urlpatterns = [

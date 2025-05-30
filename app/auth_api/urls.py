@@ -1,16 +1,16 @@
 from django.urls import path
+
 from .views import (
     CreateUserView,
+    CustomLogoutView,
     CustomObtainTokenView,
     CustomRefreshTokenView,
-    NoteListCreateView,
-    NoteDeleteView,
-    RetrieveUserView,
-    CustomLogoutView,
-    NoteEditView,
     GoogleLoginView,
+    NoteDeleteView,
+    NoteEditView,
+    NoteListCreateView,
+    RetrieveUserView,
 )
-
 
 urlpatterns = [
     path("create/", CreateUserView.as_view(), name="create_user"),

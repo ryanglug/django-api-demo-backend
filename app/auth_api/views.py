@@ -1,26 +1,23 @@
+from django.conf import settings
 from django.contrib.auth.models import User
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.tokens import RefreshToken
+from google.auth.transport import requests
+from google.oauth2 import id_token as google_id_token
+from rest_framework import generics
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.generics import CreateAPIView
-from .serializers import UserSerializer
-from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-
-from rest_framework import generics
-from rest_framework.views import APIView
-from .serializers import NoteSerializer
 from api.models import Note
-
-from google.oauth2 import id_token as google_id_token
-from google.auth.transport import requests
-
-from django.conf import settings
 from api.pagination import CustomPageSizePagination
+
+from .serializers import NoteSerializer, UserSerializer
 
 
 # Create your views here.
