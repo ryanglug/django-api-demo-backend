@@ -1,2 +1,2 @@
 React Frontend is here:
-https://github.com/glugnoob/django-api-demo-front
+https://github.com/ryanglug/django-api-demo-front
